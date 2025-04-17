@@ -1,0 +1,15 @@
+image: busybox:latest
+secretName: "my-secret"    # Name of the secret in the Kubernetes
+keyvaultName: "my-keyvault"
+# Can be changed to other types like "Opaque", "dockerconfigjson", "kubernetes.io/tls"
+# If "kubernetes.io/tls" is used then 2 keys must be defined as tls.crt and tls.key
+secretType: "Opaque" 
+secrets:
+# List of secrets
+- name: "test-secret"  # Name of the secret in the key vault
+  type: "secret"       # Type of the secret how it is stored in the key vault
+  version: "1.0"       # Optional. Version of the secret in the key vault
+  key: "tls.crt"       # Key name inside the K8s secret object
+  encoding: "base64"   # Optional. Encoding of the secret in the key vault
+tenantId: "your-tenant-id"
+clientId: "your-client-id"

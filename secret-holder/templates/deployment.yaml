@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secret-holder-{{ .Values.secretName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secret-holder-{{ .Values.secretName }}
+  template:
+    metadata:
+      labels:
+        app: secret-holder-{{ .Values.secretName }}
+    spec:
+      containers:
+        - name: secret-holder
+          image: {{ .Values.image }}
+          command: ["sh", "-c", "sleep infinity"]
+          volumeMounts:
+            {{- range .Values.secrets }}
+            - name: {{ .name }}-secret
+              mountPath: /mnt/{{ .name }}
+            {{- end }}
+      volumes:
+        {{- range .Values.secrets }}
+        - name: {{ .name }}-secret
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ $.Values.secretName }}-spc
+        {{- end }}
